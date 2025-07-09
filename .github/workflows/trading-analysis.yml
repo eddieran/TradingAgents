@@ -1,0 +1,133 @@
+name: TradingAgents Analysis
+
+on:
+  workflow_dispatch:
+    inputs:
+      ticker:
+        description: 'Stock ticker symbol to analyze'
+        required: true
+        default: 'NVDA'
+        type: string
+      date:
+        description: 'Analysis date (YYYY-MM-DD format)'
+        required: false
+        default: ''
+        type: string
+      deep_think_llm:
+        description: 'Deep thinking LLM model'
+        required: false
+        default: 'o4-mini'
+        type: string
+      quick_think_llm:
+        description: 'Quick thinking LLM model'
+        required: false
+        default: 'gpt-4o-mini'
+        type: string
+      max_debate_rounds:
+        description: 'Maximum debate rounds'
+        required: false
+        default: '1'
+        type: string
+      online_tools:
+        description: 'Use online tools (true/false)'
+        required: false
+        default: 'true'
+        type: string
+      debug:
+        description: 'Enable debug mode (true/false)'
+        required: false
+        default: 'false'
+        type: string
+  schedule:
+    # Run daily at 9 AM UTC (market open time)
+    - cron: '0 9 * * 1-5'
+  push:
+    branches: [ main ]
+    paths:
+      - 'tradingagents/**'
+      - 'cli/**'
+      - 'requirements.txt'
+      - '.github/workflows/trading-analysis.yml'
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Set analysis date
+      id: set_date
+      run: |
+        if [ "${{ github.event.inputs.date }}" != "" ]; then
+          echo "date=${{ github.event.inputs.date }}" >> $GITHUB_OUTPUT
+        else
+          echo "date=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Create output directory
+      run: mkdir -p results/github-actions
+      
+    - name: Run TradingAgents Analysis
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+        TRADINGAGENTS_TICKER: ${{ github.event.inputs.ticker || 'NVDA' }}
+        TRADINGAGENTS_DATE: ${{ steps.set_date.outputs.date }}
+        TRADINGAGENTS_DEEP_THINK_LLM: ${{ github.event.inputs.deep_think_llm || 'o4-mini' }}
+        TRADINGAGENTS_QUICK_THINK_LLM: ${{ github.event.inputs.quick_think_llm || 'gpt-4o-mini' }}
+        TRADINGAGENTS_MAX_DEBATE_ROUNDS: ${{ github.event.inputs.max_debate_rounds || '1' }}
+        TRADINGAGENTS_ONLINE_TOOLS: ${{ github.event.inputs.online_tools || 'true' }}
+        TRADINGAGENTS_DEBUG: ${{ github.event.inputs.debug || 'false' }}
+        TRADINGAGENTS_OUTPUT_PATH: results/github-actions/analysis-${{ github.run_number }}.md
+      run: |
+        python cli/non_interactive.py
+        
+    - name: Upload analysis results
+      uses: actions/upload-artifact@v3
+      with:
+        name: trading-analysis-results-${{ github.run_number }}
+        path: results/github-actions/
+        retention-days: 30
+        
+    - name: Comment on PR (if triggered by PR)
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          try {
+            const resultsPath = 'results/github-actions/analysis-' + context.runNumber + '.md';
+            if (fs.existsSync(resultsPath)) {
+              const content = fs.readFileSync(resultsPath, 'utf8');
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## 🤖 TradingAgents Analysis Results\n\n${content}`
+              });
+            }
+          } catch (error) {
+            console.log('Could not read or post results:', error.message);
+          } 

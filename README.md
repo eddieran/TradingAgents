@@ -43,7 +43,7 @@
 
 <div align="center">
 
-🚀 [TradingAgents](#tradingagents-framework) | ⚡ [Installation & CLI](#installation-and-cli) | 🎬 [Demo](https://www.youtube.com/watch?v=90gr5lwjIho) | 📦 [Package Usage](#tradingagents-package) | 🤝 [Contributing](#contributing) | 📄 [Citation](#citation)
+🚀 [TradingAgents](#tradingagents-framework) | ⚡ [Installation & CLI](#installation-and-cli) | 🎬 [Demo](https://www.youtube.com/watch?v=90gr5lwjIho) | 📦 [Package Usage](#tradingagents-package) | 🤖 [GitHub Actions](#github-actions) | 🤝 [Contributing](#contributing) | 📄 [Citation](#citation)
 
 </div>
 
@@ -191,6 +191,31 @@ print(decision)
 > For `online_tools`, we recommend enabling them for experimentation, as they provide access to real-time data. The agents' offline tools rely on cached data from our **Tauric TradingDB**, a curated dataset we use for backtesting. We're currently in the process of refining this dataset, and we plan to release it soon alongside our upcoming projects. Stay tuned!
 
 You can view the full list of configurations in `tradingagents/default_config.py`.
+
+## GitHub Actions
+
+We've created GitHub Actions workflows to run TradingAgents analysis automatically. This is perfect for:
+
+- **Automated daily analysis** of your favorite stocks
+- **CI/CD integration** for trading research
+- **Non-interactive execution** in cloud environments
+
+### Quick Start
+
+1. **Add Repository Secrets**: Set `OPENAI_API_KEY` and `FINNHUB_API_KEY` in your repository settings
+2. **Run Manual Analysis**: Go to Actions → Manual TradingAgents Analysis → Run workflow
+3. **Configure Parameters**: Enter ticker symbol and optional date
+4. **Get Results**: Download analysis results as artifacts
+
+### Features
+
+- ✅ **Manual triggering** with custom parameters
+- ✅ **Scheduled daily runs** (weekdays at 9 AM UTC)
+- ✅ **Artifact storage** for analysis results
+- ✅ **PR integration** with automatic commenting
+- ✅ **Cost optimization** with configurable models
+
+For detailed setup and usage instructions, see [GITHUB_ACTIONS.md](GITHUB_ACTIONS.md).
 
 ## Contributing
 
