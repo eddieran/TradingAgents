@@ -6,7 +6,7 @@ on:
       ticker:
         description: 'Stock ticker symbol to analyze'
         required: true
-        default: 'NVDA'
+        default: 'TSLA'
         type: string
       date:
         description: 'Analysis date (YYYY-MM-DD format, leave empty for today)'

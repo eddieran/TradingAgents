@@ -6,7 +6,7 @@ on:
       ticker:
         description: 'Stock ticker symbol to analyze'
         required: true
-        default: 'NVDA'
+        default: 'TSLA'
         type: string
       date:
         description: 'Analysis date (YYYY-MM-DD format)'
@@ -42,7 +42,7 @@ on:
     # Run daily at 9 AM UTC (market open time)
     - cron: '0 9 * * 1-5'
   push:
-    branches: [ main ]
+    branches: [ main, auto-trigger-daily ]
     paths:
       - 'tradingagents/**'
       - 'cli/**'
