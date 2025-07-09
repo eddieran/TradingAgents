@@ -97,6 +97,9 @@ export FINNHUB_API_KEY="your-finnhub-api-key"
 export TRADINGAGENTS_TICKER="NVDA"
 export TRADINGAGENTS_DATE="2024-01-15"
 
+# Install the package in development mode
+pip install -e .
+
 # Run the analysis
 python cli/non_interactive.py
 ```
