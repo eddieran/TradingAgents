@@ -96,7 +96,7 @@ jobs:
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
-        TRADINGAGENTS_TICKER: ${{ github.event.inputs.ticker || 'NVDA' }}
+        TRADINGAGENTS_TICKER: ${{ github.event.inputs.ticker || 'TSLA' }}
         TRADINGAGENTS_DATE: ${{ steps.set_date.outputs.date }}
         TRADINGAGENTS_DEEP_THINK_LLM: ${{ github.event.inputs.deep_think_llm || 'o4-mini' }}
         TRADINGAGENTS_QUICK_THINK_LLM: ${{ github.event.inputs.quick_think_llm || 'gpt-4o-mini' }}
