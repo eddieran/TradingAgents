@@ -3,7 +3,11 @@ name: Daily TSLA Analysis
 on:
   schedule:
     - cron: '0 0 * * *'  # Daily at midnight UTC
+  workflow_dispatch:  # Allow manual triggering
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
@@ -24,6 +28,7 @@ jobs:
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+        PYTHONPATH: ${{ github.workspace }}
       run: python scripts/daily_analysis.py
     - name: Commit results
       run: |
