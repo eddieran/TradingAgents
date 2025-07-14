@@ -20,7 +20,7 @@ def run_automated_analysis(dry_run=False):
         "llm_provider": "openai",
         "backend_url": "https://api.openai.com/v1",
         "shallow_thinker": "gpt-4o-mini",
-        "deep_thinker": "o1-preview",  # Deep reasoning model
+        "deep_thinker": "o3",  # Deep reasoning model
     }
     
     print(f"Starting automated TSLA analysis for {selections['analysis_date']}")
