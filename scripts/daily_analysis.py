@@ -2,18 +2,17 @@ import datetime
 import os
 import sys
 from pathlib import Path
-from functools import wraps
 
 from tradingagents.graph.trading_graph import TradingAgentsGraph
 from tradingagents.default_config import DEFAULT_CONFIG
 from cli.models import AnalystType
 
-def run_automated_analysis(dry_run=False):
-    """Run automated analysis for TSLA with predefined settings."""
+def run_automated_analysis(ticker="TSLA", dry_run=False):
+    """Run automated analysis for the given ticker with predefined settings."""
     
     # Hardcoded selections for automation
     selections = {
-        "ticker": "TSLA",
+        "ticker": ticker,
         "analysis_date": datetime.datetime.now().strftime("%Y-%m-%d"),
         "analysts": [AnalystType.MARKET, AnalystType.SOCIAL, AnalystType.NEWS, AnalystType.FUNDAMENTALS],
         "research_depth": 5,  # Deep research
@@ -23,7 +22,7 @@ def run_automated_analysis(dry_run=False):
         "deep_thinker": "o3",  # Deep reasoning model
     }
     
-    print(f"Starting automated TSLA analysis for {selections['analysis_date']}")
+    print(f"Starting automated {selections['ticker']} analysis for {selections['analysis_date']}")
     print(f"Using analysts: {', '.join(analyst.value for analyst in selections['analysts'])}")
     print(f"Research depth: {selections['research_depth']} (Deep)")
     print(f"Deep thinking model: {selections['deep_thinker']}")
@@ -107,9 +106,15 @@ def run_automated_analysis(dry_run=False):
         return None
 
 if __name__ == "__main__":
-    # Check if dry run is requested
-    dry_run = len(sys.argv) > 1 and sys.argv[1] == "--dry-run"
-    result = run_automated_analysis(dry_run=dry_run)
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Run automated stock analysis")
+    parser.add_argument("ticker", nargs="?", default="TSLA", help="Stock ticker symbol (default: TSLA)")
+    parser.add_argument("--dry-run", action="store_true", help="Run in dry mode without executing analysis")
+    
+    args = parser.parse_args()
+    
+    result = run_automated_analysis(ticker=args.ticker.upper(), dry_run=args.dry_run)
     
     if result is None:
         sys.exit(1)
